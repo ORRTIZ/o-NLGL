@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+Copyright 2019 SOMONAR B.V.
+
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<entity-engine-xml>
+
+    <!-- These classes are used to classify gl accounts for financial statement purposes: balance sheet, income statement, cash flow statement,
+        statement of shareholders' equity.  We could get fancier with different types of accounts: Investments vs PP&E, classes of equity,
+        classes of debt, etc. over time -->
+    <!--
+
+        DEBIT
+            |___> NON_POSTING
+            |
+            |___> CONTRA_REVENUE
+            |
+            |___> ASSET
+            |         |_________> LONGTERM_ASSET
+            |         |
+            |         |_________> CURRENT_ASSET
+            |                                 |____> CASH_EQUIVALENT
+            |                                 |
+            |                                 |____> INVENTORY_ASSET
+            |
+            |___> DISTRIBUTION
+            |               |___> RETURN_OF_CAPITAL
+            |               |
+            |               |___> DIVIDEND
+            |
+            |___> EXPENSE
+                      |_________> CASH_EXPENSE
+                      |                       |____> INTEREST_EXPENSE
+                      |                       |
+                      |                       |____> COGS_EXPENSE
+                      |                       |
+                      |                       |____> SGA_EXPENSE
+                      |
+                      |_________> NON_CASH_EXPENSE
+                                              |____> DEPRECIATION
+                                              |
+                                              |____> AMORTIZATION
+                                              |
+                                              |____> INVENTORY_ADJUST
+
+        CREDIT
+            |___> CONTRA_ASSET
+            |              |___> ACCUM_DEPRECIATION
+            |              |
+            |              |___> ACCUM_AMORTIZATION
+            |
+            |___> LIABILITY
+            |         |_________> CURRENT_LIABILITY
+            |         |
+            |         |_________> LONGTERM_LIABILITY
+            |
+            |___> EQUITY
+            |         |_________> OWNERS_EQUITY
+            |         |
+            |         |_________> RETAINED_EARNINGS
+            |
+            |___> REVENUE
+            |
+            |___> INCOME
+                       |________> CASH_INCOME
+                       |
+                       |________> NON_CASH_INCOME
+
+        RESOURCE
+
+    -->
+    <GlAccountClass description="Debit" glAccountClassId="DEBIT" parentClassId=""/>
+    <GlAccountClass description="Credit" glAccountClassId="CREDIT" parentClassId=""/>
+    <GlAccountClass description="Resource" glAccountClassId="RESOURCE" parentClassId=""/>
+    <GlAccountClass description="Asset" glAccountClassId="ASSET" parentClassId="DEBIT"/>
+    <GlAccountClass description="Current Asset" glAccountClassId="CURRENT_ASSET" parentClassId="ASSET"/>
+    <GlAccountClass description="Cash and Equivalent" glAccountClassId="CASH_EQUIVALENT" parentClassId="CURRENT_ASSET"/>
+    <GlAccountClass description="Inventory Asset" glAccountClassId="INVENTORY_ASSET" parentClassId="CURRENT_ASSET"/>
+    <GlAccountClass description="Long Term Asset" glAccountClassId="LONGTERM_ASSET" parentClassId="ASSET"/>
+    <GlAccountClass description="Liability" glAccountClassId="LIABILITY" parentClassId="CREDIT"/>
+    <GlAccountClass description="Current Liability" glAccountClassId="CURRENT_LIABILITY" parentClassId="LIABILITY"/>
+    <GlAccountClass description="Long Term Liability" glAccountClassId="LONGTERM_LIABILITY" parentClassId="LIABILITY"/>
+    <GlAccountClass description="Equity" glAccountClassId="EQUITY" parentClassId="CREDIT"/>
+    <GlAccountClass description="Owners Equity" glAccountClassId="OWNERS_EQUITY" parentClassId="EQUITY"/>
+    <GlAccountClass description="Retained Earnings" glAccountClassId="RETAINED_EARNINGS" parentClassId="EQUITY"/>
+    <GlAccountClass description="Equity Distribution" glAccountClassId="DISTRIBUTION" parentClassId="DEBIT"/>
+    <GlAccountClass description="Return of Capital" glAccountClassId="RETURN_OF_CAPITAL" parentClassId="DISTRIBUTION"/>
+    <GlAccountClass description="Dividends" glAccountClassId="DIVIDEND" parentClassId="DISTRIBUTION"/>
+    <GlAccountClass description="Revenue" glAccountClassId="REVENUE" parentClassId="CREDIT"/>
+    <GlAccountClass description="Contra Revenue" glAccountClassId="CONTRA_REVENUE" parentClassId="DEBIT"/>     
+    <GlAccountClass description="Income" glAccountClassId="INCOME" parentClassId="CREDIT"/>
+    <GlAccountClass description="Cash Income" glAccountClassId="CASH_INCOME" parentClassId="INCOME"/>
+    <GlAccountClass description="Non-Cash Income" glAccountClassId="NON_CASH_INCOME" parentClassId="INCOME"/>
+    <GlAccountClass description="Expense" glAccountClassId="EXPENSE" parentClassId="DEBIT"/>
+    <GlAccountClass description="Cash Expense" glAccountClassId="CASH_EXPENSE" parentClassId="EXPENSE"/>
+    <GlAccountClass description="Interest Expense" glAccountClassId="INTEREST_EXPENSE" parentClassId="CASH_EXPENSE"/> <!-- useful for EBITDA, coverage ratios, etc. -->
+    <GlAccountClass description="Cost of Goods Sold Expense" glAccountClassId="COGS_EXPENSE" parentClassId="CASH_EXPENSE"/> <!-- used for Gross Profit -->
+    <GlAccountClass description="Selling, General, and Administrative Expense" glAccountClassId="SGA_EXPENSE" parentClassId="CASH_EXPENSE"/>
+    <GlAccountClass description="Non-Cash Expense" glAccountClassId="NON_CASH_EXPENSE" parentClassId="EXPENSE"/>
+    <GlAccountClass description="Depreciation" glAccountClassId="DEPRECIATION" parentClassId="NON_CASH_EXPENSE"/>
+    <GlAccountClass description="Amortization" glAccountClassId="AMORTIZATION" parentClassId="NON_CASH_EXPENSE"/>
+    <!-- a special class for non-cash inventory adjustment expenses to avoid duplicating operating cash flow adjustments for inventory
+         account transactions, which adjust operating cash flows -->
+    <GlAccountClass description="Inventory Adjustment" glAccountClassId="INVENTORY_ADJUST" parentClassId="NON_CASH_EXPENSE"/>
+    
+    <!-- same idea: these avoid double counting of depreciation & amortization -->
+    <GlAccountClass description="Contra Asset" glAccountClassId="CONTRA_ASSET" parentClassId="CREDIT"/>
+    <GlAccountClass description="Accumulated Depreciation" glAccountClassId="ACCUM_DEPRECIATION" parentClassId="CONTRA_ASSET"/>
+    <GlAccountClass description="Accumulated Amortization" glAccountClassId="ACCUM_AMORTIZATION" parentClassId="CONTRA_ASSET"/>
+    <GlAccountClass description="Accumulated Revaluation" glAccountClassId="ACCUM_REVALUATION" parentClassId="CONTRA_ASSET"/>
+    <GlAccountClass description="Non-Posting" glAccountClassId="NON_POSTING" parentClassId="DEBIT"/>
+
+</entity-engine-xml>
